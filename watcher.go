@@ -587,7 +587,12 @@ func (w *Watcher) Start(d time.Duration) error {
 
 		// cancel can be used to cancel the current event polling function.
 		cancel := make(chan struct{})
-		defer close(cancel)
+		// fmt.Println("[watcher] creating cancel channel")
+		// uncomment to see where defer gets called
+		// it does not fire until the surrounding func exits at which point it closes all dangling channels
+		// defer func() {
+		// 	fmt.Println("[watcher] closing cancel channel from defer")
+		// }()
 
 		// Look for events.
 		go func() {
@@ -602,6 +607,7 @@ func (w *Watcher) Start(d time.Duration) error {
 		for {
 			select {
 			case <-w.close:
+				close(cancel)
 				return nil
 			case event := <-evt:
 				if len(w.ops) > 0 { // Filter Ops.
@@ -620,6 +626,10 @@ func (w *Watcher) Start(d time.Duration) error {
 				break inner
 			}
 		}
+
+		// polling complete, close cancel channel so it doesn't keep a reference
+		// fmt.Println("[watcher] closing cancel channel before sleep")
+		close(cancel)
 
 		// Update the file's list.
 		w.mu.Lock()
