@@ -464,18 +464,23 @@ type fileInfo struct {
 func (fs *fileInfo) IsDir() bool {
 	return fs.dir
 }
+
 func (fs *fileInfo) ModTime() time.Time {
 	return fs.modTime
 }
+
 func (fs *fileInfo) Mode() os.FileMode {
 	return fs.mode
 }
+
 func (fs *fileInfo) Name() string {
 	return fs.name
 }
+
 func (fs *fileInfo) Size() int64 {
 	return fs.size
 }
+
 func (fs *fileInfo) Sys() interface{} {
 	return fs.sys
 }
@@ -672,7 +677,8 @@ func (w *Watcher) ScanNow() error {
 }
 
 func (w *Watcher) pollEvents(files map[string]os.FileInfo, evt chan Event,
-	cancel chan struct{}) {
+	cancel chan struct{},
+) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
